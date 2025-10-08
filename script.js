@@ -14,7 +14,7 @@ const categoryLabels = {
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     loadProjects();
-    renderProjects();
+    renderAllSections();
     initializeEventListeners();
 });
 
@@ -24,51 +24,8 @@ function loadProjects() {
     if (savedProjects) {
         projects = JSON.parse(savedProjects);
     } else {
-        // Default projects
-        projects = [
-            {
-                id: generateId(),
-                title: 'NEON FUTURES',
-                category: 'web',
-                description: 'A cutting-edge web experience for a tech startup, featuring immersive 3D elements and micro-interactions.',
-                image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80'
-            },
-            {
-                id: generateId(),
-                title: 'QUANTUM LABS',
-                category: 'branding',
-                description: 'Complete brand identity for a quantum computing company, from logo to visual language.',
-                image: 'https://images.unsplash.com/photo-1618556450994-a6a128ef0d9d?w=800&q=80'
-            },
-            {
-                id: generateId(),
-                title: 'MINDFUL MEDITATION',
-                category: 'mobile',
-                description: 'A serene mobile app designed to help users practice mindfulness with beautiful animations.',
-                image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80'
-            },
-            {
-                id: generateId(),
-                title: 'CYBERPUNK CITY',
-                category: 'experimental',
-                description: 'An experimental WebGL experience exploring futuristic cityscapes and neon aesthetics.',
-                image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80'
-            },
-            {
-                id: generateId(),
-                title: 'ELECTRIC DASHBOARD',
-                category: 'ui-ux',
-                description: 'A comprehensive dashboard design for electric vehicle fleet management.',
-                image: 'https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=800&q=80'
-            },
-            {
-                id: generateId(),
-                title: 'ABSTRACT WORLDS',
-                category: '3d',
-                description: 'A series of 3D animated scenes exploring abstract geometric compositions.',
-                image: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=800&q=80'
-            }
-        ];
+        // Start with empty projects array
+        projects = [];
         saveProjects();
     }
 }
@@ -83,38 +40,87 @@ function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
-// Render projects to grid
-function renderProjects(filter = 'all') {
-    const grid = document.getElementById('projectsGrid');
+// Render all sections
+function renderAllSections() {
+    renderLatestProjects();
+    renderAllProjects();
+    renderExperimentalProjects();
+    renderCategories();
+}
 
-    let filteredProjects = projects;
-    if (filter !== 'all') {
-        filteredProjects = projects.filter(p => p.category === filter);
-    }
+// Render Latest Projects Section
+function renderLatestProjects() {
+    const container = document.getElementById('latestProjects');
+    const latestProjects = projects.slice(0, 6);
 
-    if (filteredProjects.length === 0) {
-        grid.innerHTML = `
-            <div class="empty-state">
-                <h3>No Projects Found</h3>
-                <p>Start by adding your first project!</p>
-                <button class="btn-primary" onclick="openModal()">Add Project</button>
-            </div>
-        `;
+    if (latestProjects.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No projects yet. Click "Add Project" to create one!</p></div>';
         return;
     }
 
-    grid.innerHTML = filteredProjects.map(project => `
-        <div class="project-card" data-category="${project.category}">
+    container.innerHTML = latestProjects.map(project => createProjectCard(project, true)).join('');
+}
+
+// Render All Projects Section
+function renderAllProjects() {
+    const container = document.getElementById('allProjects');
+    const allProjectsList = projects.slice(0, 6);
+
+    if (allProjectsList.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No projects yet. Click "Add Project" to create one!</p></div>';
+        return;
+    }
+
+    container.innerHTML = allProjectsList.map(project => createProjectCard(project, false)).join('');
+}
+
+// Render Experimental Projects Section
+function renderExperimentalProjects() {
+    const container = document.getElementById('experimentalProjects');
+    const experimentalProjects = projects.filter(p => p.category === 'experimental').slice(0, 6);
+
+    if (experimentalProjects.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No experimental projects yet.</p></div>';
+        return;
+    }
+
+    container.innerHTML = experimentalProjects.map(project => createProjectCard(project, false)).join('');
+}
+
+// Create project card HTML
+function createProjectCard(project, showNewBadge = false) {
+    return `
+        <div class="project-card-medium" data-category="${project.category}">
             <img src="${project.image}" alt="${project.title}" class="project-bg">
+            ${showNewBadge ? '<div class="new-added-badge">New Added</div>' : ''}
             <div class="project-info">
-                <div class="project-category">${categoryLabels[project.category]}</div>
                 <h3 class="project-title">${project.title}</h3>
-                <p class="project-description">${project.description}</p>
                 <div class="project-actions">
                     <button class="btn-edit" onclick="editProject('${project.id}')">Edit</button>
                     <button class="btn-delete" onclick="deleteProject('${project.id}')">Delete</button>
                 </div>
             </div>
+        </div>
+    `;
+}
+
+// Render Categories Section
+function renderCategories() {
+    const container = document.getElementById('categoriesGrid');
+
+    const categories = [
+        { name: 'Web Design', image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=800&q=80' },
+        { name: 'Mobile Apps', image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&q=80' },
+        { name: 'Branding', image: 'https://images.unsplash.com/photo-1626785774625-ddcddc3445e9?w=800&q=80' },
+        { name: 'UI/UX', image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&q=80' },
+        { name: 'Experimental', image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80' },
+        { name: '3D & Animation', image: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=800&q=80' }
+    ];
+
+    container.innerHTML = categories.map(category => `
+        <div class="category-card">
+            <img src="${category.image}" alt="${category.name}">
+            <div class="category-name">${category.name}</div>
         </div>
     `).join('');
 }
@@ -138,16 +144,6 @@ function initializeEventListeners() {
     // Form submit
     document.getElementById('projectForm').addEventListener('submit', handleFormSubmit);
 
-    // Category filters
-    document.querySelectorAll('.category-pill').forEach(pill => {
-        pill.addEventListener('click', function(e) {
-            e.preventDefault();
-            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
-            this.classList.add('active');
-            const category = this.getAttribute('data-category');
-            renderProjects(category);
-        });
-    });
 
     // Parallax effect on hero
     window.addEventListener('scroll', () => {
@@ -235,7 +231,7 @@ function handleFormSubmit(e) {
     }
 
     saveProjects();
-    renderProjects();
+    renderAllSections();
     closeModal();
 
     // Show success message (optional)
@@ -252,7 +248,7 @@ function deleteProject(projectId) {
     if (confirm('Are you sure you want to delete this project?')) {
         projects = projects.filter(p => p.id !== projectId);
         saveProjects();
-        renderProjects();
+        renderAllSections();
         showNotification('Project deleted successfully!');
     }
 }
