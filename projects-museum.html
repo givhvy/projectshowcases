@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects Showcase Museum</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-black: rgb(0, 0, 0);
+            --color-red: rgb(255, 0, 0);
+            --color-yellow: rgb(255, 204, 110);
+            --color-green: rgb(10, 201, 77);
+            --color-gray-light: rgb(245, 245, 245);
+            --color-gray: rgb(232, 232, 232);
+            --color-white: rgb(255, 255, 255);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--color-black);
+            color: var(--color-white);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(180deg, rgb(0, 0, 0) -51%, rgba(38, 38, 38, 0) 100%);
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 32px;
+            letter-spacing: 2px;
+            color: var(--color-white);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--color-gray);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-white);
+        }
+
+        .search-icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: flex-end;
+            padding: 80px 60px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(38, 38, 38, 0) 0%, rgb(0, 0, 0) 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+        }
+
+        .hero-tagline {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-yellow);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 72px;
+            line-height: 0.9;
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+        }
+
+        .hero-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--color-gray);
+            margin-bottom: 32px;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--color-white);
+            color: var(--color-black);
+            padding: 14px 32px;
+            border-radius: 38px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Projects Grid */
+        .projects-section {
+            padding: 120px 60px;
+        }
+
+        .section-header {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 48px;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--color-gray);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+        }
+
+        .project-card {
+            position: relative;
+            height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: scale(1.02);
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgb(0, 0, 0) 100%);
+            z-index: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .project-card:hover::before {
+            opacity: 0.8;
+        }
+
+        .project-bg {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .project-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 32px;
+            z-index: 2;
+        }
+
+        .project-category {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-yellow);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .project-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 36px;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .project-description {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--color-gray);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .project-card:hover .project-description {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Categories */
+        .categories {
+            padding: 80px 60px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .category-pills {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .category-pill {
+            padding: 12px 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: var(--color-gray);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .category-pill:hover,
+        .category-pill.active {
+            background: var(--color-white);
+            color: var(--color-black);
+            border-color: var(--color-white);
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 48px;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: var(--color-gray);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 20px 24px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 60px 24px;
+            }
+
+            .hero-title {
+                font-size: 48px;
+            }
+
+            .projects-section {
+                padding: 80px 24px;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .categories {
+                padding: 60px 24px;
+            }
+
+            footer {
+                padding: 40px 24px;
+            }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-black);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">PROJECT MUSEUM</a>
+        <div class="nav-links">
+            <a href="#featured">Featured</a>
+            <a href="#web">Web Design</a>
+            <a href="#mobile">Mobile Apps</a>
+            <a href="#branding">Branding</a>
+            <a href="#experimental">Experimental</a>
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor">
+                <path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"/>
+            </svg>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" style="background-image: url('https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1920&q=80');">
+        <div class="hero-content">
+            <div class="hero-tagline">Award-Winning Portfolio</div>
+            <h1 class="hero-title">EXPLORING DIGITAL CRAFTSMANSHIP</h1>
+            <p class="hero-description">A curated collection of groundbreaking projects that push the boundaries of design, technology, and creativity.</p>
+            <a href="#featured" class="btn-primary">
+                <span>Explore Gallery</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories" id="categories">
+        <div class="section-header">
+            <h2 class="section-title">BROWSE BY CATEGORY</h2>
+            <p class="section-subtitle">Filter projects by expertise</p>
+        </div>
+        <div class="category-pills">
+            <a href="#" class="category-pill active">All Projects</a>
+            <a href="#" class="category-pill">Web Design</a>
+            <a href="#" class="category-pill">Mobile Apps</a>
+            <a href="#" class="category-pill">Branding</a>
+            <a href="#" class="category-pill">UI/UX</a>
+            <a href="#" class="category-pill">Experimental</a>
+            <a href="#" class="category-pill">3D & Animation</a>
+        </div>
+    </section>
+
+    <!-- Featured Projects -->
+    <section class="projects-section" id="featured">
+        <div class="section-header">
+            <h2 class="section-title">FEATURED PROJECTS</h2>
+            <p class="section-subtitle">Showcasing our most impactful work</p>
+        </div>
+        <div class="projects-grid">
+            <div class="project-card">
+                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80" alt="Project" class="project-bg">
+                <div class="project-info">
+                    <div class="project-category">Web Design</div>
+                    <h3 class="project-title">NEON FUTURES</h3>
+                    <p class="project-description">A cutting-edge web experience for a tech startup, featuring immersive 3D elements and micro-interactions.</p>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <img src="https://images.unsplash.com/photo-1618556450994-a6a128ef0d9d?w=800&q=80" alt="Project" class="project-bg">
+                <div class="project-info">
+                    <div class="project-category">Branding</div>
+                    <h3 class="project-title">QUANTUM LABS</h3>
+                    <p class="project-description">Complete brand identity for a quantum computing company, from logo to visual language.</p>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80" alt="Project" class="project-bg">
+                <div class="project-info">
+                    <div class="project-category">Mobile App</div>
+                    <h3 class="project-title">MINDFUL MEDITATION</h3>
+                    <p class="project-description">A serene mobile app designed to help users practice mindfulness with beautiful animations.</p>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <img src="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80" alt="Project" class="project-bg">
+                <div class="project-info">
+                    <div class="project-category">Experimental</div>
+                    <h3 class="project-title">CYBERPUNK CITY</h3>
+                    <p class="project-description">An experimental WebGL experience exploring futuristic cityscapes and neon aesthetics.</p>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <img src="https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?w=800&q=80" alt="Project" class="project-bg">
+                <div class="project-info">
+                    <div class="project-category">UI/UX</div>
+                    <h3 class="project-title">ELECTRIC DASHBOARD</h3>
+                    <p class="project-description">A comprehensive dashboard design for electric vehicle fleet management.</p>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <img src="https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=800&q=80" alt="Project" class="project-bg">
+                <div class="project-info">
+                    <div class="project-category">3D & Animation</div>
+                    <h3 class="project-title">ABSTRACT WORLDS</h3>
+                    <p class="project-description">A series of 3D animated scenes exploring abstract geometric compositions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">PROJECT MUSEUM</div>
+        <p class="footer-text">© 2025 Projects Showcase Museum. Crafted with passion.</p>
+    </footer>
+
+    <script>
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Category filter
+        document.querySelectorAll('.category-pill').forEach(pill => {
+            pill.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Parallax effect on hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                hero.style.backgroundPositionY = scrolled * 0.5 + 'px';
+            }
+        });
+    </script>
+</body>
+</html>
