@@ -164,8 +164,14 @@ nav {
 
 /* Sections */
 .section-dark {
-    padding: 60px 40px;
+    padding: 60px 0;
     background: var(--color-black);
+    max-width: 1920px;
+    margin: 0 auto;
+}
+
+.section-dark > * {
+    padding: 0 40px;
 }
 
 .section-header {
