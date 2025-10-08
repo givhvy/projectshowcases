@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects Showcase Museum</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">PROJECT MUSEUM</a>
+        <div class="nav-links">
+            <a href="#featured">Featured</a>
+            <a href="#web">Web Design</a>
+            <a href="#mobile">Mobile Apps</a>
+            <a href="#branding">Branding</a>
+            <a href="#experimental">Experimental</a>
+            <button class="btn-add-project" id="addProjectBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Add Project
+            </button>
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor">
+                <path d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"/>
+            </svg>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="hero-tagline">Award-Winning Portfolio</div>
+            <h1 class="hero-title">EXPLORING DIGITAL CRAFTSMANSHIP</h1>
+            <p class="hero-description">A curated collection of groundbreaking projects that push the boundaries of design, technology, and creativity.</p>
+            <a href="#featured" class="btn-primary">
+                <span>Explore Gallery</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories" id="categories">
+        <div class="section-header">
+            <h2 class="section-title">BROWSE BY CATEGORY</h2>
+            <p class="section-subtitle">Filter projects by expertise</p>
+        </div>
+        <div class="category-pills" id="categoryPills">
+            <a href="#" class="category-pill active" data-category="all">All Projects</a>
+            <a href="#" class="category-pill" data-category="web">Web Design</a>
+            <a href="#" class="category-pill" data-category="mobile">Mobile Apps</a>
+            <a href="#" class="category-pill" data-category="branding">Branding</a>
+            <a href="#" class="category-pill" data-category="ui-ux">UI/UX</a>
+            <a href="#" class="category-pill" data-category="experimental">Experimental</a>
+            <a href="#" class="category-pill" data-category="3d">3D & Animation</a>
+        </div>
+    </section>
+
+    <!-- Featured Projects -->
+    <section class="projects-section" id="featured">
+        <div class="section-header">
+            <h2 class="section-title">FEATURED PROJECTS</h2>
+            <p class="section-subtitle">Showcasing our most impactful work</p>
+        </div>
+        <div class="projects-grid" id="projectsGrid">
+            <!-- Projects will be dynamically loaded here -->
+        </div>
+    </section>
+
+    <!-- Add/Edit Project Modal -->
+    <div class="modal" id="projectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add New Project</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <form id="projectForm">
+                <input type="hidden" id="projectId">
+
+                <div class="form-group">
+                    <label for="projectTitle">Project Title *</label>
+                    <input type="text" id="projectTitle" required placeholder="Enter project title">
+                </div>
+
+                <div class="form-group">
+                    <label for="projectCategory">Category *</label>
+                    <select id="projectCategory" required>
+                        <option value="">Select category</option>
+                        <option value="web">Web Design</option>
+                        <option value="mobile">Mobile Apps</option>
+                        <option value="branding">Branding</option>
+                        <option value="ui-ux">UI/UX</option>
+                        <option value="experimental">Experimental</option>
+                        <option value="3d">3D & Animation</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="projectDescription">Description *</label>
+                    <textarea id="projectDescription" required placeholder="Enter project description" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="projectImage">Image URL *</label>
+                    <input type="url" id="projectImage" required placeholder="https://example.com/image.jpg">
+                    <small>Enter a valid image URL (supports JPG, PNG, WebP)</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-submit">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">PROJECT MUSEUM</div>
+        <p class="footer-text">© 2025 Projects Showcase Museum. Crafted with passion.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
