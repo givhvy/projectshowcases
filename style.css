@@ -190,7 +190,7 @@ nav {
 /* Medium Project Card (for horizontal scrolls) */
 .project-card-medium {
     position: relative;
-    height: 400px;
+    height: 200px;
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
@@ -563,7 +563,7 @@ footer {
     }
 
     .project-card-medium {
-        height: 320px;
+        height: 180px;
     }
 
     .categories-grid {
