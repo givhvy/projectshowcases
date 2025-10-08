@@ -1,4 +1,7 @@
-// Projects data stored in localStorage
+// Import Firebase modules
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// Projects data
 let projects = [];
 
 // Category mapping
@@ -11,33 +14,96 @@ const categoryLabels = {
     '3d': '3D & Animation'
 };
 
+// Wait for Firebase to initialize
+function waitForFirebase() {
+    return new Promise((resolve) => {
+        if (window.db) {
+            resolve(window.db);
+        } else {
+            const checkInterval = setInterval(() => {
+                if (window.db) {
+                    clearInterval(checkInterval);
+                    resolve(window.db);
+                }
+            }, 100);
+        }
+    });
+}
+
 // Initialize app
-document.addEventListener('DOMContentLoaded', () => {
-    loadProjects();
+document.addEventListener('DOMContentLoaded', async () => {
+    await waitForFirebase();
+    await loadProjects();
     renderAllSections();
     initializeEventListeners();
 });
 
-// Load projects from localStorage
-function loadProjects() {
-    const savedProjects = localStorage.getItem('projects');
-    if (savedProjects) {
-        projects = JSON.parse(savedProjects);
-    } else {
-        // Start with empty projects array
+// Load projects from Firebase
+async function loadProjects() {
+    try {
+        const db = window.db;
+        const projectsRef = collection(db, 'projects');
+        const q = query(projectsRef, orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+
         projects = [];
-        saveProjects();
+        querySnapshot.forEach((doc) => {
+            projects.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        showNotification('Error loading projects from database');
     }
 }
 
-// Save projects to localStorage
-function saveProjects() {
-    localStorage.setItem('projects', JSON.stringify(projects));
+// Save project to Firebase
+async function saveProject(projectData, projectId = null) {
+    try {
+        const db = window.db;
+        const projectsRef = collection(db, 'projects');
+
+        if (projectId) {
+            // Update existing project
+            const projectDocRef = doc(db, 'projects', projectId);
+            await updateDoc(projectDocRef, {
+                ...projectData,
+                updatedAt: new Date().toISOString()
+            });
+        } else {
+            // Add new project
+            await addDoc(projectsRef, {
+                ...projectData,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
+        }
+
+        await loadProjects();
+        renderAllSections();
+    } catch (error) {
+        console.error('Error saving project:', error);
+        showNotification('Error saving project to database');
+        throw error;
+    }
 }
 
-// Generate unique ID
-function generateId() {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+// Delete project from Firebase
+async function deleteProjectFromDB(projectId) {
+    try {
+        const db = window.db;
+        const projectDocRef = doc(db, 'projects', projectId);
+        await deleteDoc(projectDocRef);
+
+        await loadProjects();
+        renderAllSections();
+    } catch (error) {
+        console.error('Error deleting project:', error);
+        showNotification('Error deleting project from database');
+        throw error;
+    }
 }
 
 // Render all sections
@@ -89,15 +155,19 @@ function renderExperimentalProjects() {
 
 // Create project card HTML
 function createProjectCard(project, showNewBadge = false) {
+    const cursorStyle = project.link ? 'style="cursor: pointer;"' : '';
+
     return `
-        <div class="project-card-medium" data-category="${project.category}">
-            <img src="${project.image}" alt="${project.title}" class="project-bg">
-            ${showNewBadge ? '<div class="new-added-badge">New Added</div>' : ''}
+        <div class="project-card-medium" data-category="${project.category}" data-project-id="${project.id}">
+            <div class="project-thumbnail" data-link="${project.link || ''}" ${cursorStyle}>
+                <img src="${project.image}" alt="${project.title}" class="project-bg">
+                ${showNewBadge ? '<div class="new-added-badge">New Added</div>' : ''}
+            </div>
             <div class="project-info">
                 <h3 class="project-title">${project.title}</h3>
                 <div class="project-actions">
-                    <button class="btn-edit" onclick="editProject('${project.id}')">Edit</button>
-                    <button class="btn-delete" onclick="deleteProject('${project.id}')">Delete</button>
+                    <button class="btn-edit" data-project-id="${project.id}">Edit</button>
+                    <button class="btn-delete" data-project-id="${project.id}">Delete</button>
                 </div>
             </div>
         </div>
@@ -144,6 +214,33 @@ function initializeEventListeners() {
     // Form submit
     document.getElementById('projectForm').addEventListener('submit', handleFormSubmit);
 
+    // Event delegation for edit and delete buttons
+    document.body.addEventListener('click', (e) => {
+        // Handle edit button click
+        if (e.target.classList.contains('btn-edit')) {
+            const projectId = e.target.getAttribute('data-project-id');
+            if (projectId) {
+                editProject(projectId);
+            }
+        }
+
+        // Handle delete button click
+        if (e.target.classList.contains('btn-delete')) {
+            const projectId = e.target.getAttribute('data-project-id');
+            if (projectId) {
+                deleteProject(projectId);
+            }
+        }
+
+        // Handle thumbnail click for opening links
+        if (e.target.closest('.project-thumbnail')) {
+            const thumbnail = e.target.closest('.project-thumbnail');
+            const link = thumbnail.getAttribute('data-link');
+            if (link && link !== '') {
+                window.open(link, '_blank');
+            }
+        }
+    });
 
     // Parallax effect on hero
     window.addEventListener('scroll', () => {
@@ -186,6 +283,7 @@ function openModal(projectId = null) {
             document.getElementById('projectCategory').value = project.category;
             document.getElementById('projectDescription').value = project.description;
             document.getElementById('projectImage').value = project.image;
+            document.getElementById('projectLink').value = project.link || '';
         }
     } else {
         modalTitle.textContent = 'Add New Project';
@@ -204,7 +302,7 @@ function closeModal() {
 }
 
 // Handle form submit
-function handleFormSubmit(e) {
+async function handleFormSubmit(e) {
     e.preventDefault();
 
     const projectId = document.getElementById('projectId').value;
@@ -212,30 +310,17 @@ function handleFormSubmit(e) {
         title: document.getElementById('projectTitle').value.toUpperCase(),
         category: document.getElementById('projectCategory').value,
         description: document.getElementById('projectDescription').value,
-        image: document.getElementById('projectImage').value
+        image: document.getElementById('projectImage').value,
+        link: document.getElementById('projectLink').value || null
     };
 
-    if (projectId) {
-        // Update existing project
-        const index = projects.findIndex(p => p.id === projectId);
-        if (index !== -1) {
-            projects[index] = { ...projects[index], ...projectData };
-        }
-    } else {
-        // Add new project
-        const newProject = {
-            id: generateId(),
-            ...projectData
-        };
-        projects.unshift(newProject);
+    try {
+        await saveProject(projectData, projectId || null);
+        closeModal();
+        showNotification(projectId ? 'Project updated successfully!' : 'Project added successfully!');
+    } catch (error) {
+        console.error('Error submitting form:', error);
     }
-
-    saveProjects();
-    renderAllSections();
-    closeModal();
-
-    // Show success message (optional)
-    showNotification(projectId ? 'Project updated successfully!' : 'Project added successfully!');
 }
 
 // Edit project
@@ -244,14 +329,17 @@ function editProject(projectId) {
 }
 
 // Delete project
-function deleteProject(projectId) {
+async function deleteProject(projectId) {
     if (confirm('Are you sure you want to delete this project?')) {
-        projects = projects.filter(p => p.id !== projectId);
-        saveProjects();
-        renderAllSections();
-        showNotification('Project deleted successfully!');
+        try {
+            await deleteProjectFromDB(projectId);
+            showNotification('Project deleted successfully!');
+        } catch (error) {
+            console.error('Error deleting project:', error);
+        }
     }
 }
+
 
 // Show notification (simple implementation)
 function showNotification(message) {

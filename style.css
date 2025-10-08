@@ -96,7 +96,7 @@ nav {
     display: flex;
     align-items: flex-end;
     padding: 80px 60px;
-    background-image: url('https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1920&q=80');
+    background-image: url('https://res.cloudinary.com/dxqrmxll4/image/upload/v1759865286/z7092697499138_325ef6e26c355a465ede8d0740f592c5_vcploz.jpg');
     background-size: cover;
     background-position: center;
 }
@@ -195,10 +195,6 @@ nav {
 
 /* Medium Project Card (for horizontal scrolls) */
 .project-card-medium {
-    position: relative;
-    height: 200px;
-    border-radius: 12px;
-    overflow: hidden;
     cursor: pointer;
     transition: transform 0.3s ease;
 }
@@ -207,14 +203,23 @@ nav {
     transform: translateY(-8px);
 }
 
-.project-card-medium::before {
+.project-card-medium .project-thumbnail {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.project-card-medium .project-thumbnail::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.9) 100%);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.3) 100%);
     z-index: 1;
 }
 
@@ -222,15 +227,7 @@ nav {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.project-card-medium .project-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 20px;
-    z-index: 2;
+    object-position: center;
 }
 
 .project-card-medium .new-added-badge {
@@ -247,11 +244,17 @@ nav {
     z-index: 3;
 }
 
+.project-card-medium .project-info {
+    padding: 16px 0;
+    background: var(--color-black);
+}
+
 .project-card-medium .project-title {
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 0;
     color: var(--color-white);
+    background: var(--color-black);
 }
 
 .project-card-medium .project-actions {
@@ -443,6 +446,11 @@ nav {
     transition: border-color 0.3s ease;
 }
 
+.form-group select option {
+    background: rgb(20, 20, 20);
+    color: var(--color-white);
+}
+
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
@@ -568,8 +576,8 @@ footer {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .project-card-medium {
-        height: 180px;
+    .project-card-medium .project-thumbnail {
+        aspect-ratio: 16 / 9;
     }
 
     .categories-grid {

@@ -8,11 +8,32 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;400;600;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBZwDsEWb8_Fl8XDTxOY08thuvvf1SslQU",
+            authDomain: "museum-64ef6.firebaseapp.com",
+            projectId: "museum-64ef6",
+            storageBucket: "museum-64ef6.firebasestorage.app",
+            messagingSenderId: "724266134293",
+            appId: "1:724266134293:web:dcf97e37d3490b86ae971c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.firebaseApp = app;
+        window.db = db;
+    </script>
 </head>
 <body>
     <!-- Navigation -->
     <nav>
-        <a href="#" class="logo">PROJECT MUSEUM</a>
+        <a href="#" class="logo">huy's PROJECT MUSEUM</a>
         <div class="nav-links">
             <a href="#featured">Featured</a>
             <a href="#web">Web Design</a>
@@ -125,6 +146,12 @@
                     <small>Enter a valid image URL (supports JPG, PNG, WebP)</small>
                 </div>
 
+                <div class="form-group">
+                    <label for="projectLink">Project Link</label>
+                    <input type="url" id="projectLink" placeholder="https://example.com">
+                    <small>Enter the URL to open when clicking the project (optional)</small>
+                </div>
+
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
                     <button type="submit" class="btn-submit">Save Project</button>
@@ -139,6 +166,6 @@
         <p class="footer-text">© 2025 Projects Showcase Museum. Crafted with passion.</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
