@@ -4,6 +4,13 @@ import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy 
 // Projects data
 let projects = [];
 
+// Pagination state
+const paginationState = {
+    latest: { currentPage: 1, itemsPerPage: 6 },
+    all: { currentPage: 1, itemsPerPage: 6 },
+    experimental: { currentPage: 1, itemsPerPage: 6 }
+};
+
 // Category mapping
 const categoryLabels = {
     'web': 'Web Design',
@@ -117,40 +124,75 @@ function renderAllSections() {
 // Render Latest Projects Section
 function renderLatestProjects() {
     const container = document.getElementById('latestProjects');
-    const latestProjects = projects.slice(0, 6);
+    const paginationContainer = document.getElementById('latestPagination');
+    const { currentPage, itemsPerPage } = paginationState.latest;
 
-    if (latestProjects.length === 0) {
+    if (projects.length === 0) {
         container.innerHTML = '<div class="empty-state"><p>No projects yet. Click "Add Project" to create one!</p></div>';
+        if (paginationContainer) paginationContainer.innerHTML = '';
         return;
     }
 
-    container.innerHTML = latestProjects.map(project => createProjectCard(project, true)).join('');
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedProjects = projects.slice(startIndex, endIndex);
+
+    container.innerHTML = paginatedProjects.map(project => createProjectCard(project, true)).join('');
+
+    // Render pagination
+    if (paginationContainer) {
+        paginationContainer.innerHTML = createPagination('latest', projects.length, currentPage, itemsPerPage);
+    }
 }
 
 // Render All Projects Section
 function renderAllProjects() {
     const container = document.getElementById('allProjects');
-    const allProjectsList = projects.slice(0, 6);
+    const paginationContainer = document.getElementById('allPagination');
+    const { currentPage, itemsPerPage } = paginationState.all;
 
-    if (allProjectsList.length === 0) {
+    if (projects.length === 0) {
         container.innerHTML = '<div class="empty-state"><p>No projects yet. Click "Add Project" to create one!</p></div>';
+        if (paginationContainer) paginationContainer.innerHTML = '';
         return;
     }
 
-    container.innerHTML = allProjectsList.map(project => createProjectCard(project, false)).join('');
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedProjects = projects.slice(startIndex, endIndex);
+
+    container.innerHTML = paginatedProjects.map(project => createProjectCard(project, false)).join('');
+
+    // Render pagination
+    if (paginationContainer) {
+        paginationContainer.innerHTML = createPagination('all', projects.length, currentPage, itemsPerPage);
+    }
 }
 
 // Render Experimental Projects Section
 function renderExperimentalProjects() {
     const container = document.getElementById('experimentalProjects');
-    const experimentalProjects = projects.filter(p => p.category === 'experimental').slice(0, 6);
+    const paginationContainer = document.getElementById('experimentalPagination');
+    const { currentPage, itemsPerPage } = paginationState.experimental;
+
+    const experimentalProjects = projects.filter(p => p.category === 'experimental');
 
     if (experimentalProjects.length === 0) {
         container.innerHTML = '<div class="empty-state"><p>No experimental projects yet.</p></div>';
+        if (paginationContainer) paginationContainer.innerHTML = '';
         return;
     }
 
-    container.innerHTML = experimentalProjects.map(project => createProjectCard(project, false)).join('');
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedProjects = experimentalProjects.slice(startIndex, endIndex);
+
+    container.innerHTML = paginatedProjects.map(project => createProjectCard(project, false)).join('');
+
+    // Render pagination
+    if (paginationContainer) {
+        paginationContainer.innerHTML = createPagination('experimental', experimentalProjects.length, currentPage, itemsPerPage);
+    }
 }
 
 // Create project card HTML
@@ -172,6 +214,112 @@ function createProjectCard(project, showNewBadge = false) {
             </div>
         </div>
     `;
+}
+
+// Create pagination HTML
+function createPagination(section, totalItems, currentPage, itemsPerPage) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (totalPages <= 1) return '';
+
+    let paginationHTML = '<div class="pagination">';
+
+    // Previous button
+    paginationHTML += `
+        <button class="pagination-btn pagination-prev"
+                data-section="${section}"
+                data-page="${currentPage - 1}"
+                ${currentPage === 1 ? 'disabled' : ''}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </button>
+    `;
+
+    // Page numbers
+    paginationHTML += '<div class="pagination-numbers">';
+
+    // Logic for showing page numbers
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
+
+    if (currentPage <= 3) {
+        endPage = Math.min(5, totalPages);
+    }
+    if (currentPage >= totalPages - 2) {
+        startPage = Math.max(1, totalPages - 4);
+    }
+
+    // First page
+    if (startPage > 1) {
+        paginationHTML += `
+            <button class="pagination-btn pagination-number" data-section="${section}" data-page="1">1</button>
+        `;
+        if (startPage > 2) {
+            paginationHTML += '<span class="pagination-dots">...</span>';
+        }
+    }
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHTML += `
+            <button class="pagination-btn pagination-number ${i === currentPage ? 'active' : ''}"
+                    data-section="${section}"
+                    data-page="${i}">
+                ${i}
+            </button>
+        `;
+    }
+
+    // Last page
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            paginationHTML += '<span class="pagination-dots">...</span>';
+        }
+        paginationHTML += `
+            <button class="pagination-btn pagination-number" data-section="${section}" data-page="${totalPages}">${totalPages}</button>
+        `;
+    }
+
+    paginationHTML += '</div>';
+
+    // Next button
+    paginationHTML += `
+        <button class="pagination-btn pagination-next"
+                data-section="${section}"
+                data-page="${currentPage + 1}"
+                ${currentPage === totalPages ? 'disabled' : ''}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </button>
+    `;
+
+    paginationHTML += '</div>';
+
+    return paginationHTML;
+}
+
+// Handle pagination click
+function handlePaginationClick(section, page) {
+    paginationState[section].currentPage = page;
+
+    // Re-render the appropriate section
+    if (section === 'latest') {
+        renderLatestProjects();
+    } else if (section === 'all') {
+        renderAllProjects();
+    } else if (section === 'experimental') {
+        renderExperimentalProjects();
+    }
+
+    // Scroll to section
+    const sectionElement = document.getElementById(section);
+    if (sectionElement) {
+        const yOffset = -100;
+        const y = sectionElement.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+    }
 }
 
 // Render Categories Section
@@ -238,6 +386,16 @@ function initializeEventListeners() {
             const link = thumbnail.getAttribute('data-link');
             if (link && link !== '') {
                 window.open(link, '_blank');
+            }
+        }
+
+        // Handle pagination button clicks
+        const paginationBtn = e.target.closest('.pagination-btn');
+        if (paginationBtn && !paginationBtn.disabled) {
+            const section = paginationBtn.getAttribute('data-section');
+            const page = parseInt(paginationBtn.getAttribute('data-page'));
+            if (section && page) {
+                handlePaginationClick(section, page);
             }
         }
     });
